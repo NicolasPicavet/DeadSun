@@ -132,6 +132,7 @@ public class Player : MovingObject
         Enemy enemy = transform.GetComponent<Enemy>();
         if (enemy != null) {
             // TODO hit enemy
+            animator.SetTrigger("playerChop");
             return true;
         }
         return false;
