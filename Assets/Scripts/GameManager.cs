@@ -52,8 +52,11 @@ public class GameManager : MonoBehaviour {
         doingSetup = false;
     }
 
-    public void GameOver() {
-        levelText.text = "After " + level + " days, you starved.";
+    public void GameOver(GameOverSource source) {
+        if (source == GameOverSource.MOVE)
+            levelText.text = "After " + level + " days, you starved.";
+        else if (source == GameOverSource.ENEMY)
+            levelText.text = "After " + level + " days, you were eaten alive.";
         levelImage.SetActive(true);
         enabled = false;
     }

@@ -4,8 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum GameOverSource {
+    ENEMY, MOVE
+}
+
 public class Player : MovingObject
 {
+    
+
     public int wallDamage = 1;
     public int pointsPerFood = 10;
     public int pointsPerSoda = 20;
@@ -90,7 +96,7 @@ public class Player : MovingObject
             RaycastHit2D hit;
             SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
 
-            CheckIfGameOver();
+            CheckIfGameOver(GameOverSource.MOVE);
 
             GameManager.instance.playersTurn = false;
 
@@ -139,14 +145,14 @@ public class Player : MovingObject
         animator.SetTrigger("playerHit");
         food -= loss;
         foodText.text = "-" + loss + " Food: " + food;
-        CheckIfGameOver();
+        CheckIfGameOver(GameOverSource.ENEMY);
     }
 
-    private void CheckIfGameOver() {
+    private void CheckIfGameOver(GameOverSource source) {
         if (food <= 0) {
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
-            GameManager.instance.GameOver();
+            GameManager.instance.GameOver(source);
         }
     }
 }
