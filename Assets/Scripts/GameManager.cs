@@ -61,7 +61,12 @@ public class GameManager : MonoBehaviour {
         else if (source == GameOverSource.ENEMY)
             levelText.text = "After " + level + " days, \n\nyou were eaten alive.";
         levelImage.SetActive(true);
-        enabled = false;
+        Invoke("LoadTitle", 8f);
+    }
+
+    private void LoadTitle() {
+        SoundManager.instance.musicSource.Play();
+        SceneManager.LoadScene("TitleScene");
     }
 
     // Update is called once per frame
