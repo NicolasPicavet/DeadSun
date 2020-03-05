@@ -37,6 +37,8 @@ public class Player : MovingObject
         food = GameManager.instance.playerFoodPoints;
 
         foodText.text = "Food: " + food;
+        
+        GameManager.instance.ApplyVision(this);
 
         base.Start();
         
@@ -93,7 +95,7 @@ public class Player : MovingObject
             food--;
             foodText.text = "Food: " + food;
 
-            RaycastHit2D hit;
+            //RaycastHit2D hit;
             SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
 
             CheckIfGameOver(GameOverSource.MOVE);
@@ -155,5 +157,11 @@ public class Player : MovingObject
             SoundManager.instance.musicSource.Stop();
             GameManager.instance.GameOver(source);
         }
+    }
+
+    protected override void OnMoveDone() {
+        GameManager.instance.ApplyVision(this);
+
+        base.OnMoveDone();
     }
 }

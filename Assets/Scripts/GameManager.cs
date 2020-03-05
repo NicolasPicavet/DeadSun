@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
+    public const int VISION_RADIUS = 2;
+    public const int FOG_RADIUS = 4;
+    public const int NIGHT_CYCLE = 5;
+
     public float levelStartDelay = 2f; 
     public float turnDelay = .1f;
     public static GameManager instance = null;
@@ -19,7 +23,6 @@ public class GameManager : MonoBehaviour {
     private List<Enemy> enemies;
     private bool enemiesMoving;
     private bool doingSetup;
-
 
     void Awake()
     {
@@ -94,6 +97,7 @@ public class GameManager : MonoBehaviour {
     {
         //Add one to our level number.
         level++;
+
         //Call InitGame to initialize our level.
         InitGame();
     }
@@ -109,5 +113,19 @@ public class GameManager : MonoBehaviour {
         //Tell our ‘OnLevelFinishedLoading’ function to stop listening for a scene change event as soon as this script is disabled.
         //Remember to always have an unsubscription for every delegate you subscribe to!
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    public void ApplyVision(Player player) {
+        bool nigthTime = level % NIGHT_CYCLE == 0;
+        int bonusVision = 0;
+        if (!nigthTime)
+            bonusVision += 1;
+        boardScript.ApplyVision(nigthTime, player, VISION_RADIUS + bonusVision, FOG_RADIUS);
+        if (nigthTime)
+            boardScript.ApplyNight();
+        else if (level % NIGHT_CYCLE == NIGHT_CYCLE - 1)
+            boardScript.ApplyDusk();
+        else if (level % NIGHT_CYCLE == 1)
+            boardScript.ApplyDawn();
     }
 }

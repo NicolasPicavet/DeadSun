@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour
-{
+public class Wall : MonoBehaviour {
     public Sprite dmgSprite;
     public int hp = 4;
     public AudioClip chopSound1;
     public AudioClip chopSound2;
 
-    private SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
 
-    // Start is called before the first frame update
-    void Awake()
-    {
+    void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 

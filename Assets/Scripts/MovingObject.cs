@@ -32,7 +32,7 @@ public abstract class MovingObject : MonoBehaviour
         boxCollider.enabled = true;
 
         if (hit.transform == null && indestructible.transform == null && !isMoving) {
-            StartCoroutine(SmoothMovement (end));
+            StartCoroutine(SmoothMovement(end));
             return true;
         }
 
@@ -51,6 +51,7 @@ public abstract class MovingObject : MonoBehaviour
         }
         rb2D.MovePosition(end);
         isMoving = false;
+        OnMoveDone();
     }
 
     protected virtual bool AttemptMove(int xDir, int yDir) {
@@ -68,5 +69,7 @@ public abstract class MovingObject : MonoBehaviour
     } 
 
     protected abstract bool OnCantMove(Transform transform);
+
+    protected virtual void OnMoveDone() {}
 
 }
