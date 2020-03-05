@@ -8,8 +8,8 @@ public class SoundManager : MonoBehaviour
     public AudioSource musicSource;
     public static SoundManager instance = null;
 
-    public float lowPitchRange = .95f;
-    public float highPitchRange = 1.05f;
+    public float lowPitchRange = .9f;
+    public float highPitchRange = 1.1f;
 
     void Awake()
     {
