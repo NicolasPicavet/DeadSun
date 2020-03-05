@@ -13,7 +13,7 @@ public class Enemy : MovingObject
     private bool skipMove;
 
     protected override void Start() {
-        moveTime = .02f;
+        moveTime = .1f;
         GameManager.instance.AddEnemyToList(this);
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
