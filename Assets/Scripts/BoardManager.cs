@@ -33,8 +33,9 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public const int columns = 8;
-    public const int rows = 8;
+    public const int columns = 10;
+    public const int rows = 10;
+
     public readonly Atmosphere VISION_LIGHT = new Atmosphere(1f, 1f, 1f);
     public readonly Atmosphere FOG_LIGHT = new Atmosphere(.6f, .6f, .6f);
     public readonly Atmosphere NIGHT_LIGHT = new Atmosphere(.1f, .1f, .1f);
@@ -50,8 +51,8 @@ public class BoardManager : MonoBehaviour
     public static readonly ReadOnlyCollection<String> NIGHT_INVISIBLE_TAGS = new ReadOnlyCollection<String>(new []{"Enemy", "Food", "Soda"});
     public static readonly ReadOnlyCollection<String> NIGHT_BARELY_VISIBLE_TAGS = new ReadOnlyCollection<String>(new []{"Wall"});
 
-    public Count wallCount = new Count(5,9);
-    public Count foodCount = new Count(1,5);
+    public Count wallCount;
+    public Count foodCount;
     public GameObject exit;
     public GameObject[] floorTiles;
     public GameObject[] wallTiles;
@@ -115,12 +116,21 @@ public class BoardManager : MonoBehaviour
     }
 
     public void SetupScene(int level) {
+        int mapSizeSeed = (int) Math.Sqrt((columns - 1) * (rows - 1));
+
+        wallCount = new Count((int) Math.Pow(mapSizeSeed  / 3, 2), (int) Math.Pow(mapSizeSeed  / 2, 2));
+        foodCount = new Count(1,5);
+
         instances.Clear();
         BoardSetup();
         InitialiseList();
         
         LayoutObjetAtRandom(wallTiles, wallCount.minimum, wallCount.maximum);
-        LayoutObjetAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
+
+        if (level == 1)
+            LayoutObjetAtRandom(foodTiles, 4, 4);
+        else 
+            LayoutObjetAtRandom(foodTiles, foodCount.minimum, foodCount.maximum);
 
         int enemyCount = (int)Mathf.Log(level, 2f);
         LayoutObjetAtRandom(enemyTiles, enemyCount, enemyCount);

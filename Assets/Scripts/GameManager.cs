@@ -11,9 +11,9 @@ public class GameManager : MonoBehaviour {
     public const int NIGHT_CYCLE = 5;
 
     public float levelStartDelay = 2f; 
-    public float turnDelay = .1f;
+    public float turnDelay;
     public static GameManager instance = null;
-    public int playerFoodPoints = 100;
+    public int playerFoodPoints;
     [HideInInspector] public bool playersTurn = true;
 
     private Text levelText;

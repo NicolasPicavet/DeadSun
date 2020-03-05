@@ -8,13 +8,12 @@ public enum GameOverSource {
     ENEMY, MOVE
 }
 
-public class Player : MovingObject
-{
+public class Player : MovingObject {
+    public const int pointsPerFood = 5;
+    public const int pointsPerSoda = 10;
     
 
     public int wallDamage = 1;
-    public int pointsPerFood = 10;
-    public int pointsPerSoda = 20;
     public float restartLevelDelay = 1f;
     public Text foodText;
     public AudioClip moveSound1;
@@ -37,7 +36,7 @@ public class Player : MovingObject
         food = GameManager.instance.playerFoodPoints;
 
         foodText.text = "Food: " + food;
-        
+
         GameManager.instance.ApplyVision(this);
 
         base.Start();
