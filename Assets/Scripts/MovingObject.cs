@@ -5,7 +5,7 @@ using UnityEngine;
 
 public abstract class MovingObject : MonoBehaviour
 {
-    public float moveTime = .02f;
+    public float moveTime = .1f;
     public LayerMask blockingLayer;
     public LayerMask indestructibleLayer;
 
@@ -19,7 +19,6 @@ public abstract class MovingObject : MonoBehaviour
     {
         boxCollider = GetComponent<BoxCollider2D>();
         rb2D = GetComponent<Rigidbody2D>();
-        inverseMoveTime = 1f / moveTime;
     }
 
     protected bool Move(int xDir, int yDir, out RaycastHit2D hit, out RaycastHit2D indestructible) {
@@ -44,7 +43,7 @@ public abstract class MovingObject : MonoBehaviour
         float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
 
         while(sqrRemainingDistance > float.Epsilon) {
-            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, inverseMoveTime + Time.deltaTime);
+            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, moveTime);
             rb2D.MovePosition(newPosition);
             sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             yield return null;
