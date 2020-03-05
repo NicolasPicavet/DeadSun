@@ -9,8 +9,8 @@ public enum GameOverSource {
 }
 
 public class Player : MovingObject {
-    public const int pointsPerFood = 5;
-    public const int pointsPerSoda = 10;
+    public const int pointsPerFood = 10;
+    public const int pointsPerSoda = 15;
     
 
     public int wallDamage = 1;
