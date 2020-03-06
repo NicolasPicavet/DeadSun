@@ -15,7 +15,6 @@ public class Player : MovingObject {
 
     public int wallDamage = 1;
     public float restartLevelDelay = 1f;
-    public Text foodText;
     public AudioClip moveSound1;
     public AudioClip moveSound2;
     public AudioClip eatSound1;
@@ -27,20 +26,19 @@ public class Player : MovingObject {
     private Animator animator;
     private int food;
     private Vector2 touchOrigin = -Vector2.one;
+    private Text foodText;
 
-    // Start is called before the first frame update
-    protected override void Start()
-    {
+    protected override void Start() {
         animator = GetComponent<Animator>();
 
         food = GameManager.instance.playerFoodPoints;
 
-        foodText.text = "Food: " + food;
+        foodText = GameObject.Find("FoodText").GetComponent<Text>();
+        UpdateFoodText();
 
         GameManager.instance.ApplyVision(this);
 
         base.Start();
-        
     }
 
     private void OnDisable() {
@@ -90,14 +88,11 @@ public class Player : MovingObject {
     }
 
     protected override bool AttemptMove(int xDir, int yDir) {
-        if (base.AttemptMove(xDir, yDir)) {
+        if (!CheckIfGameOver(GameOverSource.MOVE, food - 1) && base.AttemptMove(xDir, yDir)) {
             food--;
-            foodText.text = "Food: " + food;
+            UpdateFoodText();
 
-            //RaycastHit2D hit;
             SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
-
-            CheckIfGameOver(GameOverSource.MOVE);
 
             GameManager.instance.playersTurn = false;
 
@@ -112,12 +107,12 @@ public class Player : MovingObject {
             enabled = false;
         } else if (other.tag == "Food") {
             food += pointsPerFood;
-            foodText.text = "+" + pointsPerFood + " Food: " + food;
+            UpdateFoodText("+" + pointsPerFood + " ");
             SoundManager.instance.RandomizeSfx(eatSound1, eatSound2);
             other.gameObject.SetActive(false);
         } else if (other.tag == "Soda") {
             food += pointsPerSoda;
-            foodText.text = "+" + pointsPerSoda + " Food: " + food;
+            UpdateFoodText("+" + pointsPerSoda + " ");
             SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2);
             other.gameObject.SetActive(false);
         }
@@ -146,21 +141,28 @@ public class Player : MovingObject {
     public void LoseFood (int loss) {
         animator.SetTrigger("playerHit");
         food -= loss;
-        foodText.text = "-" + loss + " Food: " + food;
-        CheckIfGameOver(GameOverSource.ENEMY);
+        UpdateFoodText("-" + loss + " ");
+        CheckIfGameOver(GameOverSource.ENEMY, food);
     }
 
-    private void CheckIfGameOver(GameOverSource source) {
+    private bool CheckIfGameOver(GameOverSource source, int food) {
         if (food <= 0) {
             SoundManager.instance.PlaySingle(gameOverSound);
             SoundManager.instance.musicSource.Stop();
+            enabled = false;
             GameManager.instance.GameOver(source);
+            return true;
         }
+        return false;
     }
 
     protected override void OnMoveDone() {
         GameManager.instance.ApplyVision(this);
 
         base.OnMoveDone();
+    }
+
+    private void UpdateFoodText(string gain = "") {
+        foodText.text = gain + "Food: " + food;
     }
 }

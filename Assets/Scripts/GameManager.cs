@@ -13,28 +13,29 @@ public class GameManager : MonoBehaviour {
     public float levelStartDelay = 2f; 
     public float turnDelay;
     public static GameManager instance = null;
-    public int playerFoodPoints;
+    [HideInInspector] public int playerFoodPoints;
     [HideInInspector] public bool playersTurn = true;
 
     private Text levelText;
     private GameObject levelImage;
     private BoardManager boardScript;
-    private int level = 0;
+    private int level;
     private List<Enemy> enemies;
     private bool enemiesMoving;
     private bool doingSetup;
 
-    void Awake()
-    {
+    void Awake() {
         if (instance == null)
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
-            
         DontDestroyOnLoad(gameObject);
+
+        enabled = true;
+        level = 0;
+        playerFoodPoints = 50;
         enemies = new List<Enemy>();
         boardScript = GetComponent<BoardManager>();
-        //InitGame();
     }
 
     void InitGame() {
@@ -61,12 +62,14 @@ public class GameManager : MonoBehaviour {
         else if (source == GameOverSource.ENEMY)
             levelText.text = "After " + level + " days, \n\nyou were eaten alive.";
         levelImage.SetActive(true);
-        Invoke("LoadTitle", 8f);
+        enabled = false;
+        Invoke("LoadTitle", 6f);
     }
 
     private void LoadTitle() {
         SoundManager.instance.musicSource.Play();
         SceneManager.LoadScene("TitleScene");
+        Destroy(gameObject);
     }
 
     // Update is called once per frame
