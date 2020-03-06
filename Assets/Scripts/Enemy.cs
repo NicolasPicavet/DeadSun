@@ -14,7 +14,7 @@ public class Enemy : MovingObject
     private Enemy nextEnemyToMove;
 
     protected override void Start() {
-        speed = 12f;
+        speed = 10f;
         GameManager.instance.AddEnemyToList(this);
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
