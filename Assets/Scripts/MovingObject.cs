@@ -34,6 +34,7 @@ public abstract class MovingObject : MonoBehaviour {
             return true;
         }
 
+        StartCoroutine(OnMoveDone(false));
         return false;
     }
 
@@ -49,7 +50,7 @@ public abstract class MovingObject : MonoBehaviour {
         }
         rb2D.MovePosition(end);
         isMoving = false;
-        OnMoveDone();
+        OnMoveDone(true);
     }
 
     protected virtual bool AttemptMove(int xDir, int yDir) {
@@ -68,6 +69,7 @@ public abstract class MovingObject : MonoBehaviour {
 
     protected abstract bool OnCantMove(Transform transform);
 
-    protected virtual void OnMoveDone() {}
-
+    protected virtual IEnumerator OnMoveDone(bool success) {
+        yield return null;
+    }
 }

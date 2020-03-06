@@ -11,6 +11,7 @@ public class Enemy : MovingObject
     private Animator animator;
     private Transform target;
     private bool skipMove;
+    private Enemy nextEnemyToMove;
 
     protected override void Start() {
         speed = 12f;
@@ -23,6 +24,7 @@ public class Enemy : MovingObject
     public void MoveEnemy() {
         if (skipMove) {
             skipMove = false;
+            OnMoveDone(true);
             return;
         }
 
@@ -44,9 +46,8 @@ public class Enemy : MovingObject
                 break;
         }
 
-        if (moveSuccess) {
+        if (moveSuccess)
             skipMove = true;
-        }
     }
 
     protected override bool OnCantMove(Transform transform) {
@@ -62,5 +63,17 @@ public class Enemy : MovingObject
             }
         }
         return false;
+    }
+
+    public void SetNextEnemyToMove(Enemy nextEnemy) {
+        nextEnemyToMove = nextEnemy;
+    }
+
+    protected override IEnumerator OnMoveDone(bool success) {
+        if (nextEnemyToMove != null)
+            nextEnemyToMove.MoveEnemy();
+        nextEnemyToMove = null;
+
+        return base.OnMoveDone(success);
     }
 }

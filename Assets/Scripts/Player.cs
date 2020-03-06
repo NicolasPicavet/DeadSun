@@ -50,10 +50,14 @@ public class Player : MovingObject {
     // Update is called once per frame
     void Update()
     {
-        if (!GameManager.instance.playersTurn || GameManager.instance.enemiesMoving) return;
+        if (!GameManager.instance.playersTurn || GameManager.instance.enemiesMoving || GameManager.instance.playerMoving)
+            return;
 
         int horizontal = 0;
         int vertical = 0;
+
+        GameManager.instance.playerMoving = true;
+        StartCoroutine(Attempting());
 
         #if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBPLAYER
 
@@ -89,23 +93,22 @@ public class Player : MovingObject {
             AttemptMove(horizontal, vertical);
     }
 
-    protected override IEnumerator SmoothMovement(Vector3 end, float speed) {
-        GameManager.instance.playerMoving = true;
-        return base.SmoothMovement(end, speed);
-    }
-
     protected override bool AttemptMove(int xDir, int yDir) {
-        if (!CheckIfGameOver(GameOverSource.MOVE, food - 1) && base.AttemptMove(xDir, yDir)) {
+        bool moveSuccess = !CheckIfGameOver(GameOverSource.MOVE, food - 1) && base.AttemptMove(xDir, yDir);
+        if (moveSuccess) {
             food--;
             UpdateFoodText();
 
             SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
 
             GameManager.instance.playersTurn = false;
-
-            return true;
         }
-        return false;
+        return moveSuccess;
+    }
+
+    private IEnumerator Attempting() {
+        yield return new WaitForSeconds(GameManager.instance.turnDelay);
+        GameManager.instance.playerMoving = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
@@ -149,7 +152,7 @@ public class Player : MovingObject {
 
     public void LoseFood (int loss) {
         animator.SetTrigger("playerHit");
-        food -= loss;
+        //food -= loss;
         UpdateFoodText("-" + loss + " ");
         CheckIfGameOver(GameOverSource.ENEMY, food);
     }
@@ -165,12 +168,10 @@ public class Player : MovingObject {
         return false;
     }
 
-    protected override void OnMoveDone() {
+    protected override IEnumerator OnMoveDone(bool success) {
         GameManager.instance.ApplyVision(this);
-        
-        GameManager.instance.playerMoving = false;
 
-        base.OnMoveDone();
+        return base.OnMoveDone(success);
     }
 
     private void UpdateFoodText(string gain = "") {

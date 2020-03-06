@@ -89,11 +89,11 @@ public class GameManager : MonoBehaviour {
     IEnumerator MoveEnemies() {
         enemiesMoving = true;
         yield return new WaitForSeconds(turnDelay);
-        if (enemies.Count == 0)
-            yield return new WaitForSeconds(turnDelay);
 
-        for (int i = 0; i < enemies.Count; i++) {
-            enemies[i].MoveEnemy();
+        if (enemies.Count > 0) {
+            for (int i = 0; i < enemies.Count - 1; i++)
+                enemies[i].SetNextEnemyToMove(enemies[i + 1]);
+            enemies[0].MoveEnemy();
         }
 
         playersTurn = true;
