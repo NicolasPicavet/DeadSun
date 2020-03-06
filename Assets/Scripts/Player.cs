@@ -47,9 +47,7 @@ public class Player : MovingObject {
         GameManager.instance.playerFoodPoints = food;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         if (!GameManager.instance.playersTurn || GameManager.instance.enemiesMoving || GameManager.instance.playerMoving)
             return;
 
@@ -152,7 +150,7 @@ public class Player : MovingObject {
 
     public void LoseFood (int loss) {
         animator.SetTrigger("playerHit");
-        //food -= loss;
+        food -= loss;
         UpdateFoodText("-" + loss + " ");
         CheckIfGameOver(GameOverSource.ENEMY, food);
     }
