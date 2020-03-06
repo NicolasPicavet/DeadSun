@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Wall : MonoBehaviour {
     public Sprite dmgSprite;
-    public int hp = 4;
+    public int hp = 2;
     public AudioClip chopSound1;
     public AudioClip chopSound2;
 
