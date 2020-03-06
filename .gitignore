@@ -1,6 +1,7 @@
 *
 
 !.gitignore
+!changelog.txt
 !Assets/
 !Assets/*
 !Assets/**
