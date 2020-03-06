@@ -29,7 +29,7 @@ public class Player : MovingObject {
     private Text foodText;
 
     protected override void Start() {
-        speed = 25f;
+        speed = 12f;
 
         animator = GetComponent<Animator>();
 
