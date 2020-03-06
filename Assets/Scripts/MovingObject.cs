@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MovingObject : MonoBehaviour
-{
-    public float moveTime = .05f;
+public abstract class MovingObject : MonoBehaviour {
+    public float speed;
     public LayerMask blockingLayer;
     public LayerMask indestructibleLayer;
 
@@ -31,19 +30,19 @@ public abstract class MovingObject : MonoBehaviour
         boxCollider.enabled = true;
 
         if (hit.transform == null && indestructible.transform == null && !isMoving) {
-            StartCoroutine(SmoothMovement(end));
+            StartCoroutine(SmoothMovement(end, speed));
             return true;
         }
 
         return false;
     }
 
-    protected IEnumerator SmoothMovement(Vector3 end) {
+    protected virtual IEnumerator SmoothMovement(Vector3 end, float speed) {
         isMoving = true;
         float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
 
         while(sqrRemainingDistance > float.Epsilon) {
-            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, moveTime);
+            Vector3 newPosition = Vector3.MoveTowards(rb2D.position, end, speed * Time.deltaTime);
             rb2D.MovePosition(newPosition);
             sqrRemainingDistance = (transform.position - end).sqrMagnitude;
             yield return null;
@@ -61,7 +60,7 @@ public abstract class MovingObject : MonoBehaviour
         if (indestructible.transform != null)
             return false;
 
-        if (hit.transform == null || canMove)
+        if (hit.transform == null && canMove)
             return true;
 
         return OnCantMove(hit.transform);

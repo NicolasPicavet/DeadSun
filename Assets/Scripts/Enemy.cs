@@ -13,7 +13,7 @@ public class Enemy : MovingObject
     private bool skipMove;
 
     protected override void Start() {
-        moveTime = .1f;
+        speed = 12f;
         GameManager.instance.AddEnemyToList(this);
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -50,14 +50,16 @@ public class Enemy : MovingObject
     }
 
     protected override bool OnCantMove(Transform transform) {
-        Player player = transform.GetComponent<Player>();
-        if (player != null) {
-            animator.SetTrigger("enemyAttack");
+        if (transform != null) {
+            Player player = transform.GetComponent<Player>();
+            if (player != null) {
+                animator.SetTrigger("enemyAttack");
 
-            player.LoseFood(playerDamage);
+                player.LoseFood(playerDamage);
 
-            SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2);
-            return true;
+                SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2);
+                return true;
+            }
         }
         return false;
     }

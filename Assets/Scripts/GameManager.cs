@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour {
     public float levelStartDelay = 2f; 
     public float turnDelay;
     public static GameManager instance = null;
+    [HideInInspector] public bool enemiesMoving;
+    [HideInInspector] public bool playerMoving;
     [HideInInspector] public int playerFoodPoints;
     [HideInInspector] public bool playersTurn = true;
 
@@ -21,7 +23,6 @@ public class GameManager : MonoBehaviour {
     private BoardManager boardScript;
     private int level;
     private List<Enemy> enemies;
-    private bool enemiesMoving;
     private bool doingSetup;
 
     void Awake() {
@@ -75,7 +76,7 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (playersTurn || enemiesMoving || doingSetup)
+        if (playersTurn || playerMoving || enemiesMoving || doingSetup)
             return;
 
         StartCoroutine(MoveEnemies());
@@ -93,7 +94,6 @@ public class GameManager : MonoBehaviour {
 
         for (int i = 0; i < enemies.Count; i++) {
             enemies[i].MoveEnemy();
-            yield return new WaitForSeconds(enemies[i].moveTime);
         }
 
         playersTurn = true;

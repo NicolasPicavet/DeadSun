@@ -29,6 +29,8 @@ public class Player : MovingObject {
     private Text foodText;
 
     protected override void Start() {
+        speed = 25f;
+
         animator = GetComponent<Animator>();
 
         food = GameManager.instance.playerFoodPoints;
@@ -48,7 +50,7 @@ public class Player : MovingObject {
     // Update is called once per frame
     void Update()
     {
-        if (!GameManager.instance.playersTurn) return;
+        if (!GameManager.instance.playersTurn || GameManager.instance.enemiesMoving) return;
 
         int horizontal = 0;
         int vertical = 0;
@@ -87,6 +89,11 @@ public class Player : MovingObject {
             AttemptMove(horizontal, vertical);
     }
 
+    protected override IEnumerator SmoothMovement(Vector3 end, float speed) {
+        GameManager.instance.playerMoving = true;
+        return base.SmoothMovement(end, speed);
+    }
+
     protected override bool AttemptMove(int xDir, int yDir) {
         if (!CheckIfGameOver(GameOverSource.MOVE, food - 1) && base.AttemptMove(xDir, yDir)) {
             food--;
@@ -119,17 +126,19 @@ public class Player : MovingObject {
     }
 
     protected override bool OnCantMove(Transform transform) {
-        Wall wall = transform.GetComponent<Wall>();
-        if (wall != null) {
-            wall.DamageWall(wallDamage);
-            animator.SetTrigger("playerChop");
-            return true;
-        }
-        Enemy enemy = transform.GetComponent<Enemy>();
-        if (enemy != null) {
-            // TODO hit enemy
-            animator.SetTrigger("playerChop");
-            return true;
+        if (transform != null) {
+            Wall wall = transform.GetComponent<Wall>();
+            if (wall != null) {
+                wall.DamageWall(wallDamage);
+                animator.SetTrigger("playerChop");
+                return true;
+            }
+            Enemy enemy = transform.GetComponent<Enemy>();
+            if (enemy != null) {
+                // TODO hit enemy
+                animator.SetTrigger("playerChop");
+                return true;
+            }
         }
         return false;
     }
@@ -158,6 +167,8 @@ public class Player : MovingObject {
 
     protected override void OnMoveDone() {
         GameManager.instance.ApplyVision(this);
+        
+        GameManager.instance.playerMoving = false;
 
         base.OnMoveDone();
     }
