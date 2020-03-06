@@ -9,7 +9,7 @@ public class Enemy : MovingObject
     public AudioClip enemyAttack2;
 
     private Animator animator;
-    private Transform target;
+    private Transform playerPosition;
     private bool skipMove;
     private Enemy nextEnemyToMove;
 
@@ -17,12 +17,12 @@ public class Enemy : MovingObject
         speed = 5f;
         GameManager.instance.AddEnemyToList(this);
         animator = GetComponent<Animator>();
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
     }
 
-    public void MoveEnemy() {
-        if (skipMove) {
+    public void MoveEnemy(Vector3 target, bool resetSkip = false) {
+        if (!resetSkip && skipMove) {
             skipMove = false;
             OnMoveDone(true);
             return;
@@ -33,11 +33,11 @@ public class Enemy : MovingObject
         int yDir = 0;
 
         for (int tries = 0; tries < 2; tries++) {
-            if ((yDir == 0 && xDir != 0) || Mathf.Abs(target.position.x - transform.position.x) < float.Epsilon) {
-                yDir = target.position.y > transform.position.y ? 1 : -1;
+            if ((yDir == 0 && xDir != 0) || Mathf.Abs(target.x - transform.position.x) < float.Epsilon) {
+                yDir = target.y > transform.position.y ? 1 : -1;
                 xDir = 0;
             } else {
-                xDir = target.position.x > transform.position.x ? 1 : -1;
+                xDir = target.x > transform.position.x ? 1 : -1;
                 yDir = 0;
             }
 
@@ -46,8 +46,12 @@ public class Enemy : MovingObject
                 break;
         }
 
-        if (moveSuccess)
+        if (resetSkip || moveSuccess)
             skipMove = true;
+    }
+
+    public void MoveEnemy() {
+        MoveEnemy(playerPosition.position);
     }
 
     protected override bool OnCantMove(Transform transform) {
