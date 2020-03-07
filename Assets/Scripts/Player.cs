@@ -128,7 +128,7 @@ public class Player : MovingObject {
         }
     }
 
-    protected override bool OnCantMove(Transform transform) {
+    protected override bool OnCantMove(Transform hit) {
         
         float PushCord(float origin, float target) {
             return origin + ((target - origin) * 2);
@@ -138,14 +138,14 @@ public class Player : MovingObject {
             return new Vector3(PushCord(origin.x, target.x), PushCord(origin.y, target.y), PushCord(origin.z, target.z));
         }
 
-        if (transform != null) {
-            Wall wall = transform.GetComponent<Wall>();
+        if (hit != null) {
+            Wall wall = hit.GetComponent<Wall>();
             if (wall != null) {
                 wall.DamageWall(wallDamage);
                 animator.SetTrigger("playerChop");
                 return true;
             }
-            Enemy enemy = transform.GetComponent<Enemy>();
+            Enemy enemy = hit.GetComponent<Enemy>();
             if (enemy != null) {
                 enemy.MoveEnemy(GetPush(transform.position, enemy.transform.position), true);
                 animator.SetTrigger("playerChop");
