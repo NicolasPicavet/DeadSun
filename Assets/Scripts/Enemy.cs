@@ -9,7 +9,6 @@ public class Enemy : MovingObject
     public AudioClip enemyAttack2;
 
     private Animator animator;
-    private Transform playerPosition;
     private bool skipMove;
     private Enemy nextEnemyToMove;
 
@@ -17,7 +16,6 @@ public class Enemy : MovingObject
         speed = 5f;
         GameManager.instance.AddEnemyToList(this);
         animator = GetComponent<Animator>();
-        playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
     }
 
@@ -28,30 +26,14 @@ public class Enemy : MovingObject
             return;
         }
 
-        bool moveSuccess = false;
-        int xDir = 0;
-        int yDir = 0;
-
-        for (int tries = 0; tries < 2; tries++) {
-            if ((yDir == 0 && xDir != 0) || Mathf.Abs(target.x - transform.position.x) < float.Epsilon) {
-                yDir = target.y > transform.position.y ? 1 : -1;
-                xDir = 0;
-            } else {
-                xDir = target.x > transform.position.x ? 1 : -1;
-                yDir = 0;
-            }
-
-            moveSuccess = AttemptMove(xDir, yDir);
-            if (moveSuccess)
-                break;
-        }
+        bool moveSuccess = AttemptMoveToNextStepInPath(transform.position, target);
 
         if (resetSkip || moveSuccess)
             skipMove = true;
     }
 
     public void MoveEnemy() {
-        MoveEnemy(playerPosition.position);
+        MoveEnemy(GameManager.instance.playerPosition);
     }
 
     protected override bool OnCantMove(Transform transform) {

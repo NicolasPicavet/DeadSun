@@ -92,6 +92,7 @@ public class Player : MovingObject {
     }
 
     protected override bool AttemptMove(int xDir, int yDir) {
+        Vector3 positionPreMove = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         bool moveSuccess = !CheckIfGameOver(GameOverSource.MOVE, food - 1) && base.AttemptMove(xDir, yDir);
         if (moveSuccess) {
             food--;
@@ -99,6 +100,7 @@ public class Player : MovingObject {
 
             SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
 
+            GameManager.instance.playerPosition = positionPreMove + new Vector3(xDir, yDir, 0);
             GameManager.instance.playersTurn = false;
         }
         return moveSuccess;

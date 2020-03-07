@@ -59,10 +59,10 @@ public class BoardManager : MonoBehaviour
     public GameObject[] foodTiles;
     public GameObject[] enemyTiles;
     public GameObject[] outerWallTiles;
+    public List<Tile> boardTiles = new List<Tile>();
 
     private Transform boardHolder;
     private List<Vector3> gridPositions = new List<Vector3>();
-    private List<GameObject> instances = new List<GameObject>();
 
     void InitialiseList() {
         gridPositions.Clear();
@@ -84,7 +84,7 @@ public class BoardManager : MonoBehaviour
                     instance = InstantiateGameObject(outerWallTiles[Random.Range(0, outerWallTiles.Length)], x, y, boardHolder);
                 else
                     instance = InstantiateGameObject(floorTiles[Random.Range(0, floorTiles.Length)], x, y, boardHolder);
-                instances.Add(instance);
+                boardTiles.Add(new Tile(instance));
             }
         }
     }
@@ -110,9 +110,8 @@ public class BoardManager : MonoBehaviour
     void LayoutObjetAtRandom(GameObject[] tileArray, int minimum, int maximum) {
         int objectCount = Random.Range(minimum, maximum + 1);
 
-        for (int i = 0; i < objectCount; i++) {
-            instances.Add(InstantiateGameObject(tileArray[Random.Range(0, tileArray.Length)], RandomPosition()));
-        }
+        for (int i = 0; i < objectCount; i++)
+            boardTiles.Add(new Tile(InstantiateGameObject(tileArray[Random.Range(0, tileArray.Length)], RandomPosition())));
     }
 
     public void SetupScene(int level) {
@@ -121,7 +120,7 @@ public class BoardManager : MonoBehaviour
         wallCount = new Count((int) Math.Pow(mapSizeSeed  / 3, 2), (int) Math.Pow(mapSizeSeed  / 2, 2));
         foodCount = new Count(1,5);
 
-        instances.Clear();
+        boardTiles.Clear();
         BoardSetup();
         InitialiseList();
         
@@ -135,30 +134,30 @@ public class BoardManager : MonoBehaviour
         int enemyCount = (int)Mathf.Log(level, 2f);
         LayoutObjetAtRandom(enemyTiles, enemyCount, enemyCount);
         
-        instances.Add(InstantiateGameObject(exit, columns - 1, rows - 1));
+        boardTiles.Add(new Tile(InstantiateGameObject(exit, columns - 1, rows - 1)));
     }
 
     public void ApplyVision(bool nightTime, Player player, int visionRadius, int fogRadius) {
-        if (!instances.Contains(player.gameObject))
-            instances.Add(player.gameObject);
+        if (!TiledGameObjects().Contains(player.gameObject))
+            boardTiles.Add(new Tile(player.gameObject));
 
-        List<GameObject> vision = new List<GameObject>(instances);
-        List<GameObject> fog = new List<GameObject>(instances);
-        List<GameObject> night = new List<GameObject>(instances);
+        List<Tile> vision = new List<Tile>(boardTiles);
+        List<Tile> fog = new List<Tile>(boardTiles);
+        List<Tile> night = new List<Tile>(boardTiles);
 
         int xCenter = (int) player.transform.position.x;
         int yCenter = (int) player.transform.position.y;
 
-        foreach (GameObject i in instances) {
-            if (IsInRadius(i.transform.position, xCenter, yCenter, visionRadius)) {
-                fog.Remove(i);
-                night.Remove(i);
-            } else if (IsInRadius(i.transform.position, xCenter, yCenter, fogRadius)) {
-                vision.Remove(i);
-                night.Remove(i);
+        foreach (Tile tile in boardTiles) {
+            if (IsInRadius(tile.position, xCenter, yCenter, visionRadius)) {
+                fog.Remove(tile);
+                night.Remove(tile);
+            } else if (IsInRadius(tile.position, xCenter, yCenter, fogRadius)) {
+                vision.Remove(tile);
+                night.Remove(tile);
             } else {
-                vision.Remove(i);
-                fog.Remove(i);
+                vision.Remove(tile);
+                fog.Remove(tile);
             }
         }
 
@@ -178,13 +177,13 @@ public class BoardManager : MonoBehaviour
             && relativeAbsX + relativeAbsY != 2 * radius;
     }
 
-    private void DarkenInstances(List<GameObject> gameObjects, Atmosphere atmo, ReadOnlyCollection<String> invisibleTags, ReadOnlyCollection<String> barelyVisibleTags) {
-        foreach (GameObject go in gameObjects) {
-            SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+    private void DarkenInstances(List<Tile> tiles, Atmosphere atmo, ReadOnlyCollection<String> invisibleTags, ReadOnlyCollection<String> barelyVisibleTags) {
+        foreach (Tile tile in tiles) {
+            SpriteRenderer sr = tile.gameObject.GetComponent<SpriteRenderer>();
             float alpha = 1f;
-            if (invisibleTags.Contains(go.tag))
+            if (invisibleTags.Contains(tile.gameObject.tag))
                 alpha = INVISIBLE;
-            else if (barelyVisibleTags.Contains(go.tag))
+            else if (barelyVisibleTags.Contains(tile.gameObject.tag))
                 alpha = BARELY_VISIBLE;
             if (sr != null) {
                 sr.color = new Color(atmo.r, atmo.g, atmo.b, alpha);
@@ -205,11 +204,18 @@ public class BoardManager : MonoBehaviour
     }
 
     private void ApplyAtmosphere(Atmosphere atmo) {
-        foreach (GameObject i in instances) {
-            SpriteRenderer sr = i.GetComponent<SpriteRenderer>();
+        foreach (Tile tile in boardTiles) {
+            SpriteRenderer sr = tile.gameObject.GetComponent<SpriteRenderer>();
             if (sr != null) {
                 sr.color = new Color(sr.color.r - atmo.r, sr.color.g - atmo.g, sr.color.b - atmo.b, sr.color.a - atmo.a);
             }
         }
+    }
+
+    private List<GameObject> TiledGameObjects() {
+        List<GameObject> gameObjects = new List<GameObject>();
+        foreach (Tile tile in boardTiles)
+            gameObjects.Add(tile.gameObject);
+        return gameObjects;
     }
 }

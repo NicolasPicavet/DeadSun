@@ -13,9 +13,10 @@ public class GameManager : MonoBehaviour {
     public float levelStartDelay = 2f; 
     public float turnDelay;
     public static GameManager instance = null;
+    [HideInInspector] public Vector3 playerPosition;
+    [HideInInspector] public int playerFoodPoints;
     [HideInInspector] public bool enemiesMoving;
     [HideInInspector] public bool playerMoving;
-    [HideInInspector] public int playerFoodPoints;
     [HideInInspector] public bool playersTurn = true;
 
     private Text levelText;
@@ -135,5 +136,9 @@ public class GameManager : MonoBehaviour {
             boardScript.ApplyDusk();
         else if (level % NIGHT_CYCLE == 1)
             boardScript.ApplyDawn();
+    }
+
+    public List<Tile> GetBoardTiles() {
+        return boardScript.boardTiles;
     }
 }
