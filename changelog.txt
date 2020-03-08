@@ -17,3 +17,5 @@
 
 + Eclipse cycle
 + Fog of war
+
+. Move is not wasted when not valid
