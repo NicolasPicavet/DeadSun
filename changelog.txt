@@ -1,11 +1,19 @@
-2020-03-06
+2020-03-08
 1.2
 
 + New death messages
 + Add Title scene
 + Player can push enemy
++ Enemy pathfind to player
 
 . Set game loop on game over
 . Reduce wall hp
 . Fix movements
 . Update move speeds
+
+
+2020-03-05
+1.1
+
++ Eclipse cycle
++ Fog of war
